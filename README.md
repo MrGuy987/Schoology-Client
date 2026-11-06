@@ -18,14 +18,23 @@ A personal, dark-mode Schoology workspace built with plain HTML, CSS, and JavaSc
 
 ## Deploy the Worker
 
-From the repository root, install Wrangler and authenticate before setting secrets. If the default OAuth callback port is occupied, choose another port:
+From the repository root, install Wrangler:
 
 ```sh
 npm install --global wrangler
-wrangler login --callback-port 8977
 ```
 
-Open the Cloudflare authorization URL printed by Wrangler and approve it. Do not open the forwarded `*.app.github.dev` callback URL directly; Wrangler handles the callback. Once the login command finishes and returns to the shell prompt, run each secret command separately and enter its value at Wrangler's prompt:
+In a Codespace, use a Cloudflare API token to avoid the local OAuth callback. In the Cloudflare dashboard, create an API token with the **Edit Cloudflare Workers** template, then enter it into the terminal without adding it to shell history:
+
+```sh
+read -s -p "Cloudflare API token: " CLOUDFLARE_API_TOKEN; echo
+export CLOUDFLARE_API_TOKEN
+wrangler whoami
+```
+
+The current Wrangler OAuth flow can listen on an alternate port while still requesting a redirect to `localhost:8976`, which may time out in a Codespace. Do not open a forwarded `*.app.github.dev` callback URL as a website.
+
+After `wrangler whoami` confirms the account, run each secret command separately and enter its value at Wrangler's prompt:
 
 ```sh
 wrangler secret put SCHOOLOGY_CONSUMER_KEY --config backend/wrangler.toml
@@ -33,7 +42,7 @@ wrangler secret put SCHOOLOGY_CONSUMER_SECRET --config backend/wrangler.toml
 wrangler secret put CLIENT_ACCESS_TOKEN --config backend/wrangler.toml
 ```
 
-The token must be the same private token you'll enter in the frontend connection dialog. If your browser cannot complete Wrangler's OAuth callback in the dev container, create a Cloudflare API token with the **Edit Cloudflare Workers** permission and authenticate Wrangler with `CLOUDFLARE_API_TOKEN` instead. Set `ALLOWED_ORIGINS` in [backend/wrangler.toml](backend/wrangler.toml) to the exact frontend origin, then deploy:
+The `CLIENT_ACCESS_TOKEN` value must be the same private token you'll enter in the frontend connection dialog. Set `ALLOWED_ORIGINS` in [backend/wrangler.toml](backend/wrangler.toml) to the exact frontend origin, then deploy:
 
 ```sh
 wrangler deploy --config backend/wrangler.toml
