@@ -18,17 +18,22 @@ A personal, dark-mode Schoology workspace built with plain HTML, CSS, and JavaSc
 
 ## Deploy the Worker
 
-From the repository root, install/authenticate Wrangler if needed, then set the server-side secrets:
+From the repository root, install Wrangler and authenticate before setting secrets. If the default OAuth callback port is occupied, choose another port:
 
 ```sh
 npm install --global wrangler
-wrangler login
+wrangler login --callback-port 8977
+```
+
+Open the Cloudflare authorization URL printed by Wrangler and approve it. Do not open the forwarded `*.app.github.dev` callback URL directly; Wrangler handles the callback. Once the login command finishes and returns to the shell prompt, run each secret command separately and enter its value at Wrangler's prompt:
+
+```sh
 wrangler secret put SCHOOLOGY_CONSUMER_KEY --config backend/wrangler.toml
 wrangler secret put SCHOOLOGY_CONSUMER_SECRET --config backend/wrangler.toml
 wrangler secret put CLIENT_ACCESS_TOKEN --config backend/wrangler.toml
 ```
 
-Paste each value into Wrangler's prompt. The token must be the same private token you'll enter in the frontend connection dialog. Set `ALLOWED_ORIGINS` in [backend/wrangler.toml](backend/wrangler.toml) to the exact origin serving the frontend, then deploy:
+The token must be the same private token you'll enter in the frontend connection dialog. If your browser cannot complete Wrangler's OAuth callback in the dev container, create a Cloudflare API token with the **Edit Cloudflare Workers** permission and authenticate Wrangler with `CLOUDFLARE_API_TOKEN` instead. Set `ALLOWED_ORIGINS` in [backend/wrangler.toml](backend/wrangler.toml) to the exact frontend origin, then deploy:
 
 ```sh
 wrangler deploy --config backend/wrangler.toml
@@ -46,9 +51,18 @@ python3 -m http.server 8000 --directory frontend
 
 Open `http://localhost:8000`, select **Connect Schoology**, and enter the deployed Worker URL and the same private token. For local use, the default Worker config already permits `http://localhost:8000`.
 
-## Publish the frontend
+## Publish with Cloudflare Pages
 
-GitHub Pages can publish the `frontend` directory as the site source if configured for this repository. For a `username.github.io` project page, set `ALLOWED_ORIGINS` to the exact published origin (for example `https://mrguy987.github.io`). Redeploy the Worker after changing the origin. Do not publish API consumer credentials or your private access token in the repository.
+In Cloudflare, open **Workers & Pages**, create a **Pages** application, and connect this Git repository. Use these build settings:
+
+- Framework preset: **None**
+- Root directory: `/` (repository root)
+- Build command: leave blank
+- Build output directory: `frontend`
+
+Deploy Pages and copy its site origin, such as `https://your-project.pages.dev`. In [backend/wrangler.toml](backend/wrangler.toml), set `ALLOWED_ORIGINS` to include that exact origin, with no trailing slash, alongside `http://localhost:8000` if you still want local development. Then deploy the Worker again with `wrangler deploy --config backend/wrangler.toml`.
+
+Open the Pages site, select **Connect Schoology**, and enter the deployed Worker URL and private access token. Do not publish API consumer credentials or your private access token in the repository. A 502 at a forwarded `*.app.github.dev` callback port means that port is not serving a website; complete login from the authorization URL Wrangler prints instead.
 
 ## API notes
 

@@ -3,5 +3,5 @@ main = "worker.js"
 compatibility_date = "2026-10-01"
 
 [vars]
-# Replace with the exact deployed frontend origin. For local preview, use http://localhost:8000.
-ALLOWED_ORIGINS = "http://localhost:8000,https://mrguy987.github.io"
+# Add the exact Cloudflare Pages origin after its first deployment.
+ALLOWED_ORIGINS = "http://localhost:8000"
