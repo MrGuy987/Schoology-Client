@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="theme-color" content="#101513">
+		<meta name="description" content="A focused, personal Schoology dashboard.">
+		<title>Fieldnotes | Schoology</title>
+		<link rel="preconnect" href="https://fonts.googleapis.com">
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+		<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
+		<link rel="stylesheet" href="styles.css">
+		<script src="app.js" defer></script>
+	</head>
+	<body>
+		<div class="app-shell">
+			<aside class="sidebar" id="sidebar">
+				<a class="brand" href="#dashboard" aria-label="Fieldnotes home">
+					<span class="brand-mark" aria-hidden="true"><span></span><span></span><span></span><span></span></span>
+					<span>fieldnotes<span class="brand-dot">.</span></span>
+				</a>
+				<div class="workspace-label">YOUR SCHOOL</div>
+				<nav class="primary-nav" aria-label="Main navigation">
+					<button class="nav-link active" data-view="dashboard"><span class="nav-icon">◫</span>Overview</button>
+					<button class="nav-link" data-view="courses"><span class="nav-icon">▤</span>Courses<span class="nav-count" id="course-count">04</span></button>
+					<button class="nav-link" data-view="assignments"><span class="nav-icon">☑</span>Assignments<span class="nav-count warm" id="assignment-count">06</span></button>
+					<button class="nav-link" data-view="grades"><span class="nav-icon">⌁</span>Grades</button>
+					<button class="nav-link" data-view="calendar"><span class="nav-icon">▦</span>Calendar</button>
+				</nav>
+				<div class="nav-divider"></div>
+				<div class="workspace-label">INBOX</div>
+				<nav class="primary-nav" aria-label="Inbox navigation">
+					<button class="nav-link" data-view="announcements"><span class="nav-icon">▱</span>Announcements</button>
+					<button class="nav-link" data-view="messages"><span class="nav-icon">▰</span>Messages<span class="unread-dot" aria-label="Unread messages"></span></button>
+					<button class="nav-link" data-view="notifications"><span class="nav-icon">♧</span>Notifications<span class="nav-count coral">3</span></button>
+				</nav>
+				<div class="sidebar-bottom">
+					<div class="term-card">
+						<div class="term-top"><span class="live-dot"></span><span id="connection-label">PREVIEW MODE</span></div>
+						<div class="term-title" id="term-user">Your school, in focus.</div>
+						<button class="text-action" id="open-settings">Connect Schoology <span aria-hidden="true">↗</span></button>
+					</div>
+					<button class="profile-button" id="profile-button">
+						<span class="avatar avatar-you">Y</span>
+						<span class="profile-copy"><strong id="profile-name">Your account</strong><small>Student workspace</small></span>
+						<span class="profile-menu" aria-hidden="true">···</span>
+					</button>
+				</div>
+			</aside>
+
+			<main class="main-area">
+				<header class="topbar">
+					<button class="mobile-menu" id="mobile-menu" aria-label="Open navigation">☰</button>
+					<div class="breadcrumbs"><span>Schoology</span><span class="crumb-slash">/</span><strong id="breadcrumb-current">Overview</strong></div>
+					<div class="topbar-actions">
+						<span class="today-label" id="today-label"></span>
+						<button class="icon-button" id="search-button" aria-label="Search assignments" title="Search">⌕</button>
+						<button class="icon-button notification-button" data-view="notifications" aria-label="Notifications" title="Notifications">♧<i></i></button>
+						<span class="avatar avatar-top" id="top-avatar">Y</span>
+					</div>
+				</header>
+				<div class="page-content" id="page-content"></div>
+				<footer class="page-footer"><span>FIELDNOTES <i>×</i> SCHOOLOGY</span><span id="data-status">Preview data · Connect to your school to sync</span></footer>
+			</main>
+		</div>
+
+		<dialog class="settings-dialog" id="settings-dialog">
+			<form method="dialog" class="dialog-head">
+				<div><span class="eyebrow">PERSONAL CONNECTION</span><h2>Connect Schoology</h2></div>
+				<button class="icon-button close-dialog" aria-label="Close settings">×</button>
+			</form>
+			<div class="dialog-content">
+				<p class="dialog-intro">Your Worker signs Schoology requests. Consumer credentials stay on the server; only your private Worker address and access token are saved in this browser.</p>
+				<label class="field-label" for="worker-url">Cloudflare Worker URL</label>
+				<input id="worker-url" class="text-input" type="url" placeholder="https://schoology-api.example.workers.dev" autocomplete="url">
+				<label class="field-label" for="access-token">Private access token</label>
+				<input id="access-token" class="text-input" type="password" placeholder="Token configured in your Worker" autocomplete="off">
+				<div class="security-note"><span>◆</span><p>Keep this Worker private. Anyone with both values can use your Schoology connection. Do not share screenshots or publish them in the repository.</p></div>
+				<div class="dialog-actions">
+					<button class="button-secondary" id="disconnect-button" type="button">Disconnect</button>
+					<button class="button-primary" id="connect-button" type="button"><span>↗</span> Save &amp; sync</button>
+				</div>
+				<p class="connection-message" id="connection-message" role="status"></p>
+			</div>
+		</dialog>
+		<div class="toast" id="toast" role="status" aria-live="polite"></div>
+	</body>
+</html>
